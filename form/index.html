@@ -1,0 +1,201 @@
+<html>
+    <head>
+        <title>Farallon Island: Submission Form</title>
+        <link href="css/bootstrap.css" rel="stylesheet" />
+        <style>
+            form {
+                width: 400px;
+                margin-top: 30px;
+            }
+            #map_canvas {
+                width: 600px;
+                height: 450px;
+                margin-bottom: 10px;
+            }
+            #lat, #lon {
+                width: 100px;
+                display: inline-block;
+            }
+            .help-block {
+                font-size: 12px;
+                line-height: 14px;
+            }
+            .form-group {
+                margin-bottom: 2px;
+            }
+        </style>
+        
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js" type="text/javascript"></script>
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=true"></script>
+        <script src="js/jqBootstrapValidation.js" type="text/javascript"></script>
+        
+        <script>
+            var map;
+            //define marker up here so that only 1 marker is instantiated:
+            var marker = new google.maps.Marker();
+            
+            function initializeMap(){
+                var opts = {
+                    zoom: 16,
+                    center: new google.maps.LatLng(37.698287, -123.002908),
+                    mapTypeId: google.maps.MapTypeId.TERRAIN
+                };
+                map = new google.maps.Map(document.getElementById("map_canvas"), opts);
+                google.maps.event.addListener(map, 'click', function(event)
+                {
+                    var location = event.latLng;
+                    marker.setOptions({
+                        position: location, 
+                        map: map
+                    });
+                    $('#lat').val(location.lat().toFixed(6));
+                    $('#lon').val(location.lng().toFixed(6));
+                });
+            }
+            
+            //3) do an AJAX post instead of a traditional form submit so you don't
+            //   get redirected to the Google Forms page (looks more professional).       
+            function postForm(event){
+                var formUrl = "https://docs.google.com/forms/d/1melP2QAVwL-OGnfk_uvHCEht6ZTPwfCr15cYr3SrSmA/formResponse?embedded=true";
+                var data = $("#patagonia_form").serializeArray();
+                $.ajax({
+                    type: 'POST',
+                    url: formUrl,
+                    data: data,
+                    dataType: "xml",
+                    statusCode: {
+                        0: showSuccessMessage,
+                        200: showSuccessMessage
+                    }
+                });
+                event.preventDefault();
+                return false;
+            }
+            
+            function showSuccessMessage(){
+                $('#patagonia_form').hide();
+                $('#success').show();
+            }
+            
+            //this function runs automatically right after the page loads:
+            $(document).ready(function() {
+                //1) initialize the map:
+                initializeMap();
+                
+                //2) turn on the form validation:
+                $("input,select,textarea").not("[type=submit]").jqBootstrapValidation({
+                    submitSuccess: function ($form, event) {
+                        //3) AJAX form post
+                        postForm(event);  
+                    }
+                }); 
+            });
+        </script>
+        
+    </head>
+    <body>
+        <div class="container">
+            <h1>Farallon Island: Submission Form</h1>
+            <form id="patagonia_form" role="form" class="form-horizontal" >
+                <div id="map_canvas"></div>
+                <!-- Location -->
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Location:</label>
+                    <div class="col-sm-10">
+                        <input id="lat" type="text" name="entry.1685710116" class="form-control"
+                               value="" placeholder="Latitude" required />
+                        <input id="lon" type="text" name="entry.1266024838" class="form-control"
+                               value="" placeholder="Longitude" required />
+                               <p class="help-block">
+                            <i>Click on the map at the point of interest for the latitude and longitude</i>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Title -->
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Title:</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="entry.330574398" class="form-control"
+                               value="" required />
+                        <p class="help-block">
+                            <i>Common Murre, East Landing, Lighthouse</i>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Blurb -->
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Blurb:</label>
+                    <div class="col-sm-10">
+                        <textarea name="entry.849795984" rows="8" class="form-control" cols="0" required></textarea>
+                        <p class="help-block"><i>One to three sentences about the point</i></p>
+                    </div>
+                </div>
+                
+                <!-- Image URL -->
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Image:</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="entry.795841533" class="form-control" value="" />
+                        <p class="help-block"><i> Paste URL of image here (right click over image online and copy image URL)</i></p>
+                    </div>
+                </div>
+                
+                <!-- Info -->
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">More info:</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="entry.1551096463" class="form-control" value="" required />
+                        <p class="help-block"><i> Paste a link for people to find out more information</i> </p>
+                    </div>
+                </div>
+                
+                <!-- Date -->
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Date:</label>
+                    <div class="col-sm-10">
+                        <input type="date" name="entry.2021437838" class="form-control" value="" required />
+                        <p class="help-block"><i>Today's date</i></p>
+                    </div>
+                </div>
+                
+                <!-- Credit -->
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Credit:</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="entry.1578033554" class="form-control" value="Photo:" />
+                        <p class="help-block"><i>The photographer's name (follow this format: Photo: name)</i></p>
+                    </div>
+                </div>
+                
+                <!-- Name -->
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Name:</label>
+                    <div class="col-sm-10">
+                        <input type="text" name="entry.1880539371" class="form-control" value="" />
+                        <p class="help-block"><i>Your name goes here for reference. It will not appear on the map. </i></p>
+                    </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"></label>
+                    <div class="col-sm-10">
+                        <input id="post_to_google" type="submit" value="Submit" class="btn btn-primary" />
+                    </div>
+                </div>
+            </form>
+            
+            <!-- Success Panel -->
+            <div id="success" style="display: none;">
+                <h2>Your information has been successfully submitted</h2>
+                <p>
+                    Your information has been successfully submitted. To submit another
+                    point, click <a href="http://www.mapsforgood.org/farallon/form">here</a>
+                </p>
+            </div>
+        
+        </div>
+    </body>
+</html>

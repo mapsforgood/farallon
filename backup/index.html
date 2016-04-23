@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title></title>
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,300,600,700' rel='stylesheet' type='text/css'>
+  <script src='//api.tiles.mapbox.com/mapbox.js/v1.3.1/mapbox.js'></script>
+  <script src='http://code.jquery.com/jquery-1.8.3.min.js'></script>
+  <script src='csv2geojson.js'></script>
+  <link href='//api.tiles.mapbox.com/mapbox.js/v1.3.1/mapbox.css' rel='stylesheet' />
+  <!--[if lte IE 8]>
+    <link href='//api.tiles.mapbox.com/mapbox.js/v1.3.1/mapbox.ie.css' rel='stylesheet'>
+  <![endif]-->
+  <style>
+    body { margin:0; padding:0; }
+    #map { position:absolute; top:0; bottom:0; width:100%; }
+	body {font-family: 'Open Sans', sans-serif; padding:0px; color:#414042}
+	</style>
+</head>
+
+<body>
+<!--popup styling-->
+<style>
+img{width:300px;
+	height:220px;
+	margin-left:auto;
+margin-right:auto;}
+
+	b1 {font-size:18px;
+	font-weight:600;
+	}
+	r1 {font-size:12px;
+	font-weight:700;
+	}
+	
+	</style>
+<!--Navigation bar-->
+<style>
+#navigation {
+    background:#fff;
+    position:absolute;
+    top:50px;
+    right:0;
+    bottom:50px;
+    width:200px;
+    padding:20px;}
+#navigation a {display:block;}
+</style>
+  
+<div id='map'></div>
+<div id='navigation'>
+
+<!--ZOOM TO-->
+<a> Fly to:</a>
+    <a href='#' data-position='-47, -72.0' >Full Park</a>
+    <a href='#' data-position='-47.116957, -72.483759' >Park Headquarters</a>
+    <a href='#' data-position='-47.042990, -72.183266' >Avil&eacute;s Trail</a>
+    <a href='#' data-position='-47.129951, -72.502899' >Lagunas Altas Trail</a>
+</div>
+
+<script type='text/javascript'>
+//nav function
+document.getElementById('navigation').onclick = function(e) {
+    var pos = e.target.getAttribute('data-position');
+    if (pos) {
+        var loc = pos.split(',');
+        map.setView(loc, 16);
+    }
+}
+</script>
+<!--BASE MAP-->
+<script type='text/javascript'>
+var map = L.mapbox.map('map', 'http://a.tiles.mapbox.com/v3/mapsforgood.map-xs1az2ul.json', {
+	maxZoom:17,
+	minZoom:3
+   }).setView([-47, -72.0], 9);
+//tooltips as popups
+map.gridControl.options.follow = true; 
+   
+//IMMERSIVE PANORAMAS
+var geoJson = [
+];
+map.markerLayer.setGeoJSON(geoJson);
+
+//CSV TO MARKER
+var markerLayer = L.mapbox.markerLayer().addTo(map);
+$.ajax({
+    url: 'points.csv',
+    success: function csvLoad(csv) {
+        csv2geojson.csv2geojson(csv, function(err, data) {
+            markerLayer.setGeoJSON(data);
+            markerLayer.eachLayer(function(layer) {
+                // here you call `bindPopup` with a string of HTML you create - the feature
+                // properties declared above are available under `layer.feature.properties`
+                var content = '<b1>' + layer.feature.properties.title + '<\/b1>' + '<img src=' + layer.feature.properties		.image + '>' + '<br><r1>' + layer.feature.properties.blurb + '<\/r1>' + '<br> <a href=' + layer.feature.properties.info + '> Click here for more information';
+                layer.bindPopup(content);
+            });
+        });
+		
+		map.addCallback("drawn", function() {
+      if (map.zoom() > 10 && !markerLayer.enabled) {
+        markerLayer.enable();
+        } else if (map.zoom() < 10 && markerLayer.enabled) {
+        markerLayer.disable();
+      }
+    });
+ 
+    }
+});
+
+ 
+    map.addLayer(markerLayer);
+
+
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+	<script src="../assets/js/jquery.popup.js"></script>
+</body>
+</html>
