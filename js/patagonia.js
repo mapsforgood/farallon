@@ -39,6 +39,8 @@ function initNavigation() {
 
 function initMap() {
     //initialize map:
+    // TODO: change this to Maps for Good's access token
+    L.mapbox.accessToken = 'pk.eyJ1IjoicmFjaGVsaHltYW4iLCJhIjoiY2luZ3RrOW9uMGpzc3Uya2o5azA0NjRjOCJ9.u946YHD4Vka5nfUuPswNYw'
     map = L.mapbox.map('map', 'http://a.tiles.mapbox.com/v3/mapsforgood.68ee8c52.json',  {
 	detectRetina:true,
 	maxZoom:21,
@@ -52,9 +54,9 @@ function initMap() {
     map.on('zoomend', showHideMarkers);
     
     //add three empty layers to hold each kind of marker:
-    panoramicLayer = L.mapbox.markerLayer().addTo(map);
-    audioLayer = L.mapbox.markerLayer().addTo(map);
-    photoLayer = L.mapbox.markerLayer().addTo(map);
+    panoramicLayer = L.mapbox.featureLayer().addTo(map);
+    audioLayer = L.mapbox.featureLayer().addTo(map);
+    photoLayer = L.mapbox.featureLayer().addTo(map);
     
     //query google doc for panoramic entries and add panoramic layer:
 //    querySpreadsheet({
