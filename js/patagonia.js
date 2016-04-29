@@ -45,7 +45,7 @@ function initMap() {
 	detectRetina:true,
 	maxZoom:21,
 	minZoom:10, zoomControl: false 
-    }).setView([37.698423, -123.005011], 16); 
+    }).setView([37.698423, -123.005011], 16);
     
     //add map controls
     new L.Control.Zoom({ position: 'topleft' }).addTo(map);
@@ -131,28 +131,30 @@ function createAudioLayer(response) {
 
 function createPhotoLayer(response) {
     var geoJson = response2GeoJson(response);
-    
-    //add new layer to the map:
-    photoLayer.on('layeradd', function(e) {
-        var marker = e.layer, feature = marker.feature;
-    
-        marker.setIcon(L.icon({
-            iconUrl: 'http://mapsforgood.org/demos/patagonia/images/PNP_POI.png',
-            "iconSize": [11.25, 11.25], // size of the icon
-                "iconAnchor": [10, 10], // point of the icon which will correspond to marker's location
-                "popupAnchor": [0, -10]  // point from which the popup should open relative to the iconAnchor
-        }));
-        
-        // here you call `bindPopup` with a string of HTML you create - the feature
-        // properties declared above are available under `layer.feature.properties`
-        var content = '<r1>' + e.layer.feature.properties.title + '<\/r1>' +
-            '<img class="popup" src=' + e.layer.feature.properties.image + '>'  + '<br><r3>' + e.layer.feature.properties.credit + '<\/r3>' + 
-                    '<br><r2>' + e.layer.feature.properties.blurb + '<\/r2>' +  '<br> <i><a href= ' +
-            e.layer.feature.properties.info + ' target="_blank"> Click here for more. </i>';
-        e.layer.bindPopup(content);
+
+    var points_collection = L.geoJson(geoJson, {
+        pointToLayer: function(feature,latlng) {
+            var marker = L.marker(latlng);
+    //     marker.setIcon(L.icon({
+    //         iconUrl: 'http://mapsforgood.org/demos/patagonia/images/PNP_POI.png',
+    //         "iconSize": [11.25, 11.25], // size of the icon
+    //             "iconAnchor": [10, 10], // point of the icon which will correspond to marker's location
+    //             "popupAnchor": [0, -10]  // point from which the popup should open relative to the iconAnchor
+    //     }));
+            var content = '<r1>' + feature.properties.title + '<\/r1>' +
+                '<img class="popup" src=' + feature.properties.image + '>'  + '<br><r3>' + feature.properties.credit + '<\/r3>' + 
+                '<br><r2>' + feature.properties.blurb + '<\/r2>' +  '<br> <i><a href= ' +
+                feature.properties.info + ' target="_blank"> Click here for more. </i>';
+             marker.bindPopup(content);
+             return marker;
+            }
     });
-    photoLayer.setGeoJSON(geoJson);
-    showHideMarkers();
+    var clusters = L.markerClusterGroup();
+    //add collection of points to cluster layer
+    clusters.addLayer(points_collection);
+    map.addLayer(clusters);
+
+showHideMarkers();
 }
 
 function showHideMarkers() {
