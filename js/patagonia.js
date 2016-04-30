@@ -40,7 +40,7 @@ function initNavigation() {
 function initMap() {
     //initialize map:
     // TODO: change this to Maps for Good's access token
-    L.mapbox.accessToken = 'pk.eyJ1IjoicmFjaGVsaHltYW4iLCJhIjoiY2luZ3RrOW9uMGpzc3Uya2o5azA0NjRjOCJ9.u946YHD4Vka5nfUuPswNYw'
+    L.mapbox.accessToken = 'pk.eyJ1IjoibWFwc2Zvcmdvb2QiLCJhIjoidVZRQ0huSSJ9.91oSQkzn4y4_CwKqQq6bkQ'
     map = L.mapbox.map('map', 'http://a.tiles.mapbox.com/v3/mapsforgood.68ee8c52.json',  {
 	detectRetina:true,
 	maxZoom:21,
