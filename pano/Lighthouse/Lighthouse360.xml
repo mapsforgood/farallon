@@ -1,0 +1,16 @@
+<krpano version="1.0.8.15" ispartialpano="true">
+	
+	<include url="skin/defaultskin.xml" />
+	
+	<view hlookat="0" vlookat="0"  maxpixelzoom="1.0" limitview="range" vlookatmin="-22.875" vlookatmax="22.875" />
+
+	<preview url="Lighthouse360.tiles/preview.jpg" />
+
+	<image>
+		<cube url="Lighthouse360.tiles/pano_%s.jpg" />
+		<mobile>
+			<cube url="Lighthouse360.tiles/mobile_%s.jpg" />
+		</mobile>
+	</image>
+
+</krpano>
